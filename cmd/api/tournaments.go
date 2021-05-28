@@ -15,7 +15,7 @@ func (app *application) createTournamentHandler(w http.ResponseWriter, r *http.R
 func (app *application) showTournamentHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notFoundResponse(w, r)
 		return
 	}
 
@@ -30,7 +30,6 @@ func (app *application) showTournamentHandler(w http.ResponseWriter, r *http.Req
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"tournament": tournament}, nil)
 	if err != nil {
-		app.logger.Println(err)
-		http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
+		app.serverErrorResponse(w, r, err)
 	}
 }
