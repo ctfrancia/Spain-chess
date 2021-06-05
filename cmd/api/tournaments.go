@@ -9,7 +9,19 @@ import (
 )
 
 func (app *application) createTournamentHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "create a new tournament")
+	var input struct {
+		Title string `json:"title"`
+		Year  int32  `json:"year"`
+		// People []string `json:"people"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	fmt.Fprintf(w, "%+v\n", input)
 }
 
 func (app *application) showTournamentHandler(w http.ResponseWriter, r *http.Request) {
