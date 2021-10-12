@@ -15,6 +15,7 @@ type Tournament struct {
 	Year      int32     `json:"year"`
 	Month     int8      `json:"month"`
 	Day       int32     `json:"day"`
+	Version   int32
 }
 
 // TournamentModel defines our tournament Model for DB queries
@@ -33,7 +34,14 @@ func ValidateTournament(v *validator.Validator, tournament *Tournament) {
 
 // Insert defines our method of inserting into the Db
 func (t TournamentModel) Insert(tmt Tournament) error {
-	return nil
+	query := `
+		INSERT INTO tournaments (title, year)
+		VALUES($1, $2)
+		RETURNING id, created_at, version
+	`
+	args := []interface{}{tmt.Title, tmt.Year}
+
+	return t.DB.QueryRow(query, args...).Scan(&tmt.ID, &tmt.CreatedAt, &tmt.Version)
 }
 
 // Get defines our method for getting a tournament
